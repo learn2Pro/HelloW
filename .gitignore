@@ -2,4 +2,5 @@
 */target/
 *.iml
 */*.iml
-*/target/
+out/
+target/generated-sources/
