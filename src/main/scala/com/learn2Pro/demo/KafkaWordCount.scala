@@ -12,6 +12,10 @@ import org.apache.spark.streaming.kafka._
   * User: tang
   * Date: 2017/1/16
   * Time: 18:23
+  *  * Example:
+  *    $ bin/run-example \
+  *      org.apache.spark.examples.streaming.KafkaWordCount zoo01,zoo02,zoo03 \
+  *      my-consumer-group topic1,topic2 1
   */
 object KafkaWordCount {
   def main(args: Array[String]) {
@@ -33,6 +37,8 @@ object KafkaWordCount {
     val wordCounts = words.map(x => (x, 1L))
       .reduceByKeyAndWindow(_ + _, _ - _, Minutes(10), Seconds(2), 2)
     wordCounts.print()
+    println(wordCounts)
+    wordCounts.saveAsTextFiles("hdfs://master:9000/tmp/directKafkaWordCount")
 
     ssc.start()
     ssc.awaitTermination()
