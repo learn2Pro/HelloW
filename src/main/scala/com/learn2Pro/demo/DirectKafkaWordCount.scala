@@ -52,6 +52,8 @@ object DirectKafkaWordCount {
     val words = lines.flatMap(_.split(" "))
     val wordCounts = words.map(x => (x, 1L)).reduceByKey(_ + _)
     wordCounts.print()
+    println(wordCounts)
+    wordCounts.saveAsTextFiles("hdfs://master:9000/tmp/directKafkaWordCount" + System.currentTimeMillis())
 
     // Start the computation
     ssc.start()
