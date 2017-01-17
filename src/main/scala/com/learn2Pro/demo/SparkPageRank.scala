@@ -18,7 +18,7 @@ object SparkPageRank {
   private var localFilePath: File = new File(".")
   private var dfsDirPath: String = ""
 
-  private val NPARAMS = 2
+  private val NPARAMS = 3
 
   def showWarning() {
     System.err.println(
@@ -77,17 +77,18 @@ object SparkPageRank {
     }
 
     showWarning()
+    parseArgs(args)
 
     val spark = SparkSession
       .builder
       .appName("SparkPageRank")
       .getOrCreate()
-    dfsDirPath = args(2) + "pageRankUrls" + System.currentTimeMillis()
+    dfsDirPath = args(1) + "pageRankUrls" + System.currentTimeMillis()
     val fileContents = readFile(localFilePath.toString())
     val fileRDD = spark.sparkContext.parallelize(fileContents)
     fileRDD.saveAsTextFile(dfsDirPath)
 
-    val iters = if (args.length > 1) args(1).toInt else 10
+    val iters = if (args.length > 1) args(2).toInt else 10
     val lines = spark.read.textFile(dfsDirPath).rdd
     val links = lines.map { s =>
       val parts = s.split("\\s+")
@@ -105,7 +106,7 @@ object SparkPageRank {
 
     val output = ranks.collect()
     output.foreach(tup => println(tup._1 + " has rank: " + tup._2 + "."))
-    ranks.saveAsTextFile(args(2) + "SparkPageRank" + System.currentTimeMillis());
+    ranks.saveAsTextFile(args(1) + "SparkPageRank" + System.currentTimeMillis());
     spark.stop()
   }
 }
