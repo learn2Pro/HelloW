@@ -24,8 +24,9 @@ object KMeansExample {
     val parsedData = data.map(s => Vectors.dense(s.split(' ').map(_.toDouble))).cache()
 
     // Cluster the data into two classes using KMeans
-    val numClusters = 2
-    val numIterations = 20
+    val Array(numClus, numIter, path) = args
+    val numClusters = numClus.toInt
+    val numIterations = numIter.toInt
     val clusters = KMeans.train(parsedData, numClusters, numIterations)
 
     // Evaluate clustering by computing Within Set Sum of Squared Errors
@@ -33,8 +34,8 @@ object KMeansExample {
     println("Within Set Sum of Squared Errors = " + WSSSE)
 
     // Save and load model
-    clusters.save(sc, "KMeansModel")
-    val sameModel = KMeansModel.load(sc, "KMeansModel")
+    clusters.save(sc, path + "KMeansModel")
+    val sameModel = KMeansModel.load(sc, path + "KMeansModel")
     // $example off$
 
     sc.stop()
