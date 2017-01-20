@@ -28,12 +28,23 @@ object KMeansExample {
     val numClusters = numClus.toInt
     val numIterations = numIter.toInt
     val clusters = KMeans.train(parsedData, numClusters, numIterations)
-
+    var clusterIndex: Int = 0
     // Evaluate clustering by computing Within Set Sum of Squared Errors
+    clusters.clusterCenters.foreach(x => {
+      println("Center Point of Cluster" + clusterIndex + ":")
+      println(x)
+      clusterIndex += 1
+    })
+    parsedData.collect().foreach(line => {
+      val predictedIndex: Int = clusters.predict(line)
+      println("The data " + line.toString + " belongs to Cluster " +
+        predictedIndex)
+    })
     val WSSSE = clusters.computeCost(parsedData)
-    println("Within Set Sum of Squared Errors = " + WSSSE)
+    println("Cluster Within Set Sum of Squared Errors = " + WSSSE)
 
     // Save and load model
+    clusters.predict(parsedData)
     clusters.save(sc, path + "KMeansModel")
     val sameModel = KMeansModel.load(sc, path + "KMeansModel")
     // $example off$
